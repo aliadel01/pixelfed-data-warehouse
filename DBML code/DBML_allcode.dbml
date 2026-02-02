@@ -1,0 +1,337 @@
+Table "fact_sessions" {
+  "session_sk" bigint [pk]
+  "id" bigint [unique, not null]
+  "profile_sk" bigint [not null, ref: < "dim_profile"."profile_sk"]
+  "device_sk" bigint [not null, ref: < "dim_device"."device_sk"]
+  "date_sk" int [not null]
+  "last_activity" int
+  "created_at" datetime
+}
+
+Table "dim_media" {
+  "media_sk" bigint [pk]
+  "media_id" bigint [unique, not null]
+  "profile_sk" bigint [ref: < "dim_profile"."profile_sk"]
+  "is_nsfw" tinyint
+  "remote_media" tinyint
+  "original_sha256" varchar(500)
+  "optimized_sha256" varchar(500)
+  "media_path" varchar(500)
+  "thumbnail_path" varchar(500)
+  "cdn_url" varchar(500)
+  "optimized_url" varchar(500)
+  "thumbnail_url" varchar(500)
+  "remote_url" varchar(500)
+  "caption" varchar(500)
+  "hls_path" varchar(500)
+  "order" tinyint
+  "mime" varchar(500)
+  "size" bigint
+  "orientation" varchar(500)
+  "filter_name" varchar(500)
+  "filter_class" varchar(500)
+  "license" varchar(500)
+  "processed_at" datetime
+  "hls_transcoded_at" datetime
+  "created_at" datetime
+  "deleted_at" datetime
+  "key" varchar(500)
+  "metadata" json
+  "version" tinyint
+  "effective_from" datetime
+  "effective_to" datetime
+  "is_current" tinyint
+}
+
+Table "fact_bookmarks" {
+  "fact_bookmarks_sk" bigint [pk]
+  "id" bigint [unique, not null]
+  "status_sk" bigint [not null, ref: < "dim_status"."status_sk"]
+  "profile_sk" bigint [not null, ref: < "dim_profile"."profile_sk"]
+  "created_at" datetime
+}
+
+Table "fact_status_media" {
+  "fact_status_media_sk" bigint [pk]
+  "id" bigint [unique, not null]
+  "status_sk" bigint [not null, ref: < "dim_status"."status_sk"]
+  "media_sk" bigint [not null, ref: < "dim_media"."media_sk"]
+  "created_at" datetime
+}
+
+Table "dim_device" {
+  "device_sk" bigint [pk]
+  "ip_address" varchar(100)
+  "user_agent" varchar(500)
+  "device_type" varchar(100)
+  "created_at" datetime
+}
+
+Table "fact_likes" {
+  "fact_like_sk" bigint [pk]
+  "id" bigint [unique, not null]
+  "profile_sk" bigint [not null, ref: < "dim_profile"."profile_sk"]
+  "status_sk" bigint [not null, ref: < "dim_status"."status_sk"]
+  "flagged" tinyint
+  "created_at" datetime
+  "deleted_at" datetime
+  "is_deleted" tinyint
+}
+
+Table "dim_hashtags" {
+  "hashtag_sk" bigint [pk]
+  "hashtag_id" bigint [unique, not null]
+  "name" varchar(500) [unique]
+  "slug" varchar(500) [unique]
+  "is_nsfw" tinyint
+  "is_banned" tinyint
+  "created_at" datetime
+  "updated_at" datetime
+}
+
+Table "dim_place" {
+  "place_sk" bigint [pk]
+  "place_id" bigint
+  "slug" varchar(500)
+  "name" varchar(500)
+  "country" varchar(500)
+  "aliases" json
+  "lat" decimal
+  "long" decimal
+  "created_at" datetime
+  "updated_at" datetime
+}
+
+Table "fact_comments" {
+  "fact_comment_sk" bigint [pk]
+  "id" bigint [unique, not null]
+  "profile_sk" bigint [not null, ref: < "dim_profile"."profile_sk"]
+  "status_sk" bigint [not null, ref: < "dim_status"."status_sk"]
+  "comment" text
+  "rendered" text
+  "entities" json
+  "is_remote" tinyint
+  "rendered_at" datetime
+  "created_at" datetime
+}
+
+Table "fact_user_filters" {
+  "fact_filter_sk" bigint [pk]
+  "id" bigint [unique, not null]
+  "profile_sk" bigint [not null, ref: < "dim_profile"."profile_sk"]
+  "filter_type" varchar(100)
+  "filterable_type" varchar(100)
+  "filterable_id" bigint
+  "date_sk" int [not null]
+  "created_at" datetime
+}
+
+Table "fact_auth_events" {
+  "auth_event_sk" bigint [pk]
+  "id" bigint [unique, not null]
+  "profile_sk" bigint [not null, ref: < "dim_profile"."profile_sk"]
+  "oauth_client_sk" bigint [not null, ref: < "dim_oauth_client"."oauth_client_sk"]
+  "date_sk" int [not null]
+  "event_type" varchar(50)
+  "success_flag" tinyint
+  "created_at" datetime
+}
+
+Table "fact_status_engagement_daily" {
+  "fact_status_engagement_daily_sk" bigint [pk]
+  "status_sk" bigint [not null, ref: < "dim_status"."status_sk"]
+  "profile_sk" bigint [not null, ref: < "dim_profile"."profile_sk"]
+  "date_sk" int [not null]
+  "likes_count" bigint
+  "reblogs_count" bigint
+  "reply_count" int
+  "bookmarks_count" int
+  "comments_count" int
+  "created_at" datetime
+}
+
+Table "dim_profile" {
+  "profile_sk" bigint [pk]
+  "profile_id" bigint [not null]
+  "user_id" bigint
+  "username" varchar(500)
+  "name" varchar(500)
+  "domain" varchar(500)
+  "bio" text
+  "location" varchar(500)
+  "website" varchar(500)
+  "avatar_url" varchar(500)
+  "is_private" tinyint
+  "unlisted" tinyint
+  "cw" tinyint
+  "no_autolink" tinyint
+  "is_suggestable" tinyint
+  "webfinger" varchar(500)
+  "role" varchar(50)
+  "crawlable" tinyint
+  "show_guests" tinyint
+  "show_discover" tinyint
+  "public_dm" tinyint
+  "hide_cw_search" tinyint
+  "hide_blocked_search" tinyint
+  "always_show_cw" tinyint
+  "compose_media_descriptions" tinyint
+  "reduce_motion" tinyint
+  "optimize_screen_reader" tinyint
+  "high_contrast_mode" tinyint
+  "video_autoplay" tinyint
+  "send_email_new_follower" tinyint
+  "send_email_new_follower_request" tinyint
+  "send_email_on_share" tinyint
+  "send_email_on_like" tinyint
+  "send_email_on_mention" tinyint
+  "show_profile_followers" tinyint
+  "show_profile_follower_count" tinyint
+  "show_profile_following" tinyint
+  "show_profile_following_count" tinyint
+  "effective_from" datetime
+  "effective_to" datetime
+  "is_current" tinyint
+  "created_at" datetime
+}
+
+Table "dim_action" {
+  "action_sk" bigint [pk]
+  "action_name" varchar(100) [unique]
+  "action_category" varchar(100)
+}
+
+Table "dim_status" {
+  "status_sk" bigint [pk]
+  "status_id" bigint [unique, not null]
+  "profile_sk" bigint [not null, ref: < "dim_profile"."profile_sk"]
+  "place_sk" bigint [ref: < "dim_place"."place_sk"]
+  "conversation_id" bigint
+  "in_reply_to_status_id" bigint
+  "reblog_of_status_id" bigint
+  "uri" varchar(500)
+  "url" varchar(500)
+  "object_url" varchar(500)
+  "caption" text
+  "rendered" text
+  "cw_summary" varchar(500)
+  "entities" json
+  "type" varchar(50)
+  "language" varchar(10)
+  "is_nsfw" tinyint
+  "visibility" varchar(50)
+  "scope" varchar(50)
+  "reply" tinyint
+  "comments_disabled" tinyint
+  "local" tinyint
+  "created_at" datetime
+  "deleted_at" datetime
+  "is_deleted" tinyint
+  "effective_from" datetime
+  "effective_to" datetime
+  "is_current" tinyint
+}
+
+Table "fact_activities" {
+  "activity_sk" bigint [pk]
+  "id" bigint [unique, not null]
+  "from_profile_sk" bigint [not null, ref: < "dim_profile"."profile_sk"]
+  "to_profile_sk" bigint [not null, ref: < "dim_profile"."profile_sk"]
+  "object_type" varchar(500)
+  "date_sk" int [not null]
+  "processed_at" datetime
+  "created_at" datetime
+}
+
+Table "dim_date" {
+  "date_sk" int [pk]
+  "date" date [unique, not null]
+  "day" int
+  "month" int
+  "year" int
+  "quarter" int
+  "day_of_week" int
+  "day_name" varchar(20)
+  "month_name" varchar(20)
+  "is_weekend" tinyint
+  "is_holiday" tinyint
+}
+
+Table "fact_profile_daily_snapshot" {
+  "fact_profile_daily_snapshot_sk" bigint [pk]
+  "profile_sk" bigint [not null, ref: < "dim_profile"."profile_sk"]
+  "date_sk" int [not null]
+  "status_count" int
+  "followers_count" int
+  "following_count" int
+  "likes_given_count" int
+  "likes_received_count" int
+  "reblogs_given_count" int
+  "reblogs_received_count" int
+  "comments_count" int
+  "comments_received_count" int
+  "stories_count" int
+  "story_views_count" int
+  "bookmarks_count" int
+  "active_today_flag" tinyint
+  "deleted_flag" tinyint
+  "created_at" datetime
+}
+
+Table "fact_status_hashtags" {
+  "fact_status_hashtags_sk" bigint [pk]
+  "id" bigint [unique, not null]
+  "status_sk" bigint [not null, ref: < "dim_status"."status_sk"]
+  "hashtag_sk" bigint [not null, ref: < "dim_hashtags"."hashtag_sk"]
+  "profile_sk" bigint [not null, ref: < "dim_profile"."profile_sk"]
+  "status_visibility" varchar(500)
+  "created_at" datetime
+}
+
+Table "fact_user_devices" {
+  "fact_user_devices_sk" bigint [pk]
+  "profile_sk" bigint [not null, ref: < "dim_profile"."profile_sk"]
+  "device_sk" bigint [not null, ref: < "dim_device"."device_sk"]
+  "trusted" tinyint
+  "last_active_date_sk" int [not null]
+  "created_at" datetime
+  "updated_at" datetime
+}
+
+Table "fact_audit_events" {
+  "audit_event_sk" bigint [pk]
+  "id" bigint [unique, not null]
+  "actor_profile_sk" bigint [not null, ref: < "dim_profile"."profile_sk"]
+  "target_object" varchar(500)
+  "action_sk" bigint [not null, ref: < "dim_action"."action_sk"]
+  "date_sk" int [not null]
+  "event_source" varchar(50)
+  "access_level" varchar(50)
+  "created_at" datetime
+}
+
+Table "dim_oauth_client" {
+  "oauth_client_sk" bigint [pk]
+  "client_id" bigint
+  "name" varchar(500)
+  "client_type" varchar(50)
+  "personal_access_client" tinyint
+  "password_client" tinyint
+  "revoked" tinyint
+  "created_at" datetime
+}
+
+Table "fact_user_invites" {
+  "fact_user_invites_sk" bigint [pk]
+  "id" bigint [unique, not null]
+  "from_profile_sk" bigint [not null, ref: < "dim_profile"."profile_sk"]
+  "to_profile_sk" bigint [ref: < "dim_profile"."profile_sk"]
+  "email" varchar(500)
+  "message" text
+  "key" varchar(500)
+  "token" varchar(500)
+  "valid_until" datetime
+  "used_at" datetime
+  "created_at" datetime
+  "updated_at" datetime
+}
